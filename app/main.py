@@ -60,15 +60,17 @@ def create_posts(post: Post):
 
 
 @app.get("/api/{id}")
-def get_post(id : int):
-    cursor.execute(""" SELECT * FROM users WHERE user_id = %s""", (str(id),))
-    post = cursor.fetchone()
+def get_post(id: int):
+    with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+        cursor.execute(""" SELECT * FROM users WHERE user_id = %s""", (str(id),))
+        post = cursor.fetchone()
+    
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"post with id: {id} was not found")
-        #response.status_code = status.HTTP_404_NOT_FOUND
-        #return {"data" : f"post with id {id} was not found"}
-    return {"post_detail" : post}
+    
+    return {"post_detail": post}
+
 
 
 @app.delete("/api/{id}", status_code=status.HTTP_204_NO_CONTENT)
