@@ -31,27 +31,7 @@ while True:
         print("Error: ", error)
         time.sleep(3)
 
-my_posts = [{"title" : "title of post 1", "content" : "content of post 1", "id" : 1},
-    {"title" : "favorite locations", "content" : "i like laboma", "id" : 2}]
-
-
-def find_post(id):
-    for p in my_posts:
-        if p["id"] == id:
-            return p
-        
-def find_index_post(id):
-    for i,p in enumerate(my_posts):
-        if p["id"] == id:
-            return i
-
-@app.get("/")
-def root():
-
-    return{"message" : "Hello world"}
-
-
-@app.get("/posts")
+@app.get("/api")
 def getter():
     cursor.execute(""" SELECT * FROM posts""")
     posts = cursor.fetchall()
@@ -59,7 +39,7 @@ def getter():
     return{"data" : posts}
 
 
-@app.post("/posts")
+@app.post("/api")
 def create_posts(post: Post):
     cursor.execute("""INSERT INTO users (user_id, name) VALUES (%s, %s) RETURNING * """,(post.user_id, post.name))
     #print(posts)
@@ -76,15 +56,10 @@ def create_posts(post: Post):
 #    return {"detail" : post}
 
 
-@app.get("/posts/latest")
-def get_latest_post():
-    if my_posts:
-        latest_post = my_posts[-1]
-        return {"detail": latest_post}
 
 
 
-@app.get("/posts/{id}")
+@app.get("/api/{id}")
 def get_post(id : int):
     cursor.execute(""" SELECT * FROM users WHERE user_id = %s""", (str(id),))
     post = cursor.fetchone()
@@ -96,7 +71,7 @@ def get_post(id : int):
     return {"post_detail" : post}
 
 
-@app.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@app.delete("/api/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_post(id : int):
 
 
@@ -109,7 +84,7 @@ def delete_post(id : int):
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-@app.put("/posts/{id}")
+@app.put("/api/{id}")
 def update_post(id : int, post: Post):
     cursor.execute("""UPDATE users SET user_id = %s, name = %s where user_id = %s RETURNING *""", (post.user_id, post.name, str(id),))
     updated_post = cursor.fetchone()
