@@ -8,9 +8,9 @@ Listed in this documentation are:
   - Limitations
 
 
-##Endpoints
+## Endpoints
 
-###Create
+### Create
 - *URL* : /api
 - *Method* : post
 - *Request Format* : JSON
@@ -21,7 +21,7 @@ user_id : person's id
 name : name of person
 
 
-###READ
+### READ
 - *URL* : /api
 - *Method* : get
 - *Response Format* : JSON
@@ -30,7 +30,7 @@ name : name of person
 
 
 
-###Update
+### Update
 - *URL* : /api
 - *Method* : put
 - *Request Format* : JSON
@@ -41,7 +41,7 @@ user_id : person's id
 name : name of person
 
 
-###Delete
+### Delete
 - *URL* : /api
 - *Method* : delete
 - *Request Format* : JSON
@@ -50,52 +50,52 @@ user_id : person's id
 status code : 204
 
 
-##Sample Usage
+## Sample Usage
 
-###Create
+### Create
 
-####Request
+#### Request
 - *POST*
 - *'/https://url/api'
 
-####Response
+#### Response
 - Status Code : 200
 - { "user_id" : 1, "name" : "Kwabena Darko" }
 
 
-###READ
+### READ
 
-####Request
+#### Request
 - *GET*
 - *'/https://url/api/1'
 
-####Response
+#### Response
 - Status Code : 200
 - { "user_id" : 1, "name" : "Kwabena Darko" }
 
 
-###UPDATE
+### UPDATE
 
-####Request
+#### Request
 - *PUT*
 - *'/https://url/api/1'
 - { "user_id" : 1, "name" : "Kwabena Darko" }
 
-####Response
+#### Response
 - Status Code : 200
 - { "user_id" : 1, "name" : "Kwabena Darko" }
 
 
-###DELETE
+### DELETE
 
-####Request
+#### Request
 - *DELETE*
 - *'/https://url/api/1'
 
-####Response
+#### Response
 - Status Code : 204
 
 
-##Limitations
+## Limitations
 - Lack of Authentication/Authorization
 
