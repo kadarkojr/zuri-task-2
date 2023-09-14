@@ -78,9 +78,11 @@ def get_post(id: int):
 def delete_post(id : int):
 
     with conn.cursor(cursor_factory=RealDictCursor) as cursor:
-    cursor.execute("""DELETE FROM users WHERE user_id = %s returning *""", (str(id),))
-    deleted_post = cursor.fetchone()
+        cursor.execute("""DELETE FROM users WHERE user_id = %s returning *""", (str(id),))
+        deleted_post = cursor.fetchone()
+        
     conn.commit()
+        
     if deleted_post is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail = f"post with id {id} not found")
 
@@ -91,8 +93,8 @@ def delete_post(id : int):
 def update_post(id : int, post: Post):
 
     with conn.cursor(cursor_factory=RealDictCursor) as cursor:
-    cursor.execute("""UPDATE users SET user_id = %s, name = %s where user_id = %s RETURNING *""", (post.user_id, post.name, str(id),))
-    updated_post = cursor.fetchone()
+        cursor.execute("""UPDATE users SET user_id = %s, name = %s where user_id = %s RETURNING *""", (post.user_id, post.name, str(id),))
+        updated_post = cursor.fetchone()
     
 
     conn.commit()
