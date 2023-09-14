@@ -20,7 +20,10 @@ while True:
 
 
     try:
-        conn = psycopg2.connect(host='dpg-ck116bhgbqfc73fqg77g-a.oregon-postgres.render.com', database='people_ab3q', user='people_ab3q_user', password='FAToxxSeRyrjQsk94I0VdCt52RsSezLf', cursor_factory=RealDictCursor)
+        conn = psycopg2.connect(host='dpg-ck116bhgbqfc73fqg77g-a.oregon-postgres.render.com', database='people_ab3q', user='people_ab3q_user', password='FAToxxSeRyrjQsk94I0VdCt52RsSezLf', cursor_factory=RealDictCursor,
+            keepalives=1,keepalives_idle=30,
+            keepalives_interval=10,
+            keepalives_count=5)
         cursor = conn.cursor()
         print("Database connection was succesful")
         break
