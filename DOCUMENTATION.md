@@ -97,4 +97,5 @@ status code : 204
 
 
 ##Limitations
-- 
+- Lack of Authentication/Authorization
+
