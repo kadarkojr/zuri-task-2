@@ -41,10 +41,11 @@ def getter():
 
 @app.post("/api")
 def create_posts(post: Post):
-    cursor.execute("""INSERT INTO users (user_id, name) VALUES (%s, %s) RETURNING * """,(post.user_id, post.name))
-    #print(posts)
+    with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+        cursor.execute("""INSERT INTO users (user_id, name) VALUES (%s, %s) RETURNING * """,(post.user_id, post.name))
+        #print(posts)
 
-    new_post = cursor.fetchone()
+        new_post = cursor.fetchone()
 
     conn.commit()
     return {"data" : new_post}
