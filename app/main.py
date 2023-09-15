@@ -12,7 +12,6 @@ app = FastAPI()
 
 
 class Post(BaseModel):
-    user_id: int
     name: str
 
 
@@ -20,10 +19,7 @@ while True:
 
 
     try:
-        conn = psycopg2.connect(host='dpg-ck116bhgbqfc73fqg77g-a.oregon-postgres.render.com', database='people_ab3q', user='people_ab3q_user', password='FAToxxSeRyrjQsk94I0VdCt52RsSezLf', cursor_factory=RealDictCursor,
-            keepalives=1,keepalives_idle=30,
-            keepalives_interval=10,
-            keepalives_count=5)
+        conn = psycopg2.connect(host='dpg-ck1ptp821fec738hdjo0-a.oregon-postgres.render.com', database='myusers', user='myusers_user', password='oWsU8128G94ZZUgz8itB8qriiiVjgJe4', cursor_factory=RealDictCursor)
         cursor = conn.cursor()
         print("Database connection was succesful")
         break
@@ -45,13 +41,21 @@ def getter():
 @app.post("/api")
 def create_posts(post: Post):
     with conn.cursor(cursor_factory=RealDictCursor) as cursor:
-        cursor.execute("""INSERT INTO users (user_id, name) VALUES (%s, %s) RETURNING * """,(post.user_id, post.name))
-        #print(posts)
+    # Check if a record with the same name already exists
+        cursor.execute("SELECT id FROM users WHERE name = %s", (post.name,))
+        existing_record = cursor.fetchone()
 
+        if existing_record:
+        # If a record with the same name exists, raise an exception
+            raise HTTPException(status_code=400, detail="Name Already Registered")
+
+    # If no record with the same name exists, insert the new record
+        cursor.execute("INSERT INTO users (name) VALUES (%s) RETURNING *", (post.name,))
         new_post = cursor.fetchone()
 
     conn.commit()
-    return {"data" : new_post}
+    return {"data": new_post}
+
 
 
 #@app.get('posts/latest')
@@ -64,28 +68,27 @@ def create_posts(post: Post):
 
 
 @app.get("/api/{id}")
-def get_post(id: int):
+def get_post(id : int):
     with conn.cursor(cursor_factory=RealDictCursor) as cursor:
-        cursor.execute(""" SELECT * FROM users WHERE user_id = %s""", (str(id),))
+        cursor.execute(""" SELECT * FROM users WHERE id = %s""", (str(id),))
         post = cursor.fetchone()
     
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"post with id: {id} was not found")
-    
-    return {"post_detail": post}
-
+        #response.status_code = status.HTTP_404_NOT_FOUND
+        #return {"data" : f"post with id {id} was not found"}
+    return {"post_detail" : post}
 
 
 @app.delete("/api/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_post(id : int):
 
     with conn.cursor(cursor_factory=RealDictCursor) as cursor:
-        cursor.execute("""DELETE FROM users WHERE user_id = %s returning *""", (str(id),))
+        cursor.execute("""DELETE FROM users WHERE id = %s returning *""", (str(id),))
         deleted_post = cursor.fetchone()
-        
     conn.commit()
-        
+
     if deleted_post is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail = f"post with id {id} not found")
 
@@ -93,15 +96,19 @@ def delete_post(id : int):
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 @app.put("/api/{id}")
-def update_post(id : int, post: Post):
-
+def update_post(id: int, post: Post):
     with conn.cursor(cursor_factory=RealDictCursor) as cursor:
-        cursor.execute("""UPDATE users SET user_id = %s, name = %s where user_id = %s RETURNING *""", (post.user_id, post.name, str(id),))
+        # Check if the record with the specified ID exists
+        cursor.execute("SELECT id FROM users WHERE id = %s", (id,))
+        existing_record = cursor.fetchone()
+
+        if existing_record is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Post with id {id} not found")
+
+        # Update the record with the specified ID
+        cursor.execute("UPDATE users SET name = %s WHERE id = %s RETURNING *", (post.name, id))
         updated_post = cursor.fetchone()
-    
 
     conn.commit()
-    if updated_post == None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail = f"post with id {id} not found")
     
-    return {"data" : updated_post}
+    return {"data": updated_post}
